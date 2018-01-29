@@ -1,2 +1,2 @@
 # Multi-threaded-file-transfer
-Java多线程文件传工具
+Java多线程文件传输工具
