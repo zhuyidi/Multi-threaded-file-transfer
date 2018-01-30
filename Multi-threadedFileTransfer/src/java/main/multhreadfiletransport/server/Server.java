@@ -37,25 +37,25 @@ public class Server {
 
     public void start() throws IOException {
         socket = serverSocket.accept();
-        outputStream = new BufferedOutputStream(socket.getOutputStream());
-
-        System.out.println("请输入要传输的文件");
-        Scanner scanner = new Scanner(System.in);
-        String filePath = scanner.nextLine();
-
-        // 打开这个文件, 对这个文件进行分片处理, 将分片信息存储
-
-        // 设置到simpleInfo里面的文件名是不带路径的, 仅含有文件名.
-        // 所以在sender段进行处理的时候, 先从配置文件中读取目标路径, 后面再进行更改
-        RandomAccessFile file = new RandomAccessFile(filePath, "rw");
-        String fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length());
-        long fileLen = file.length();
-        RecieverSimpleInfo fileInfo = getFileInfo(fileName, fileLen);
-
-        // TODO
-        // 这里写到了一个文件的所有信息(simpleInfo)已经构造完成.
-        // (但是服务器端发送给sender的信息应该是分片列表信息,
-        // 而服务器端发送给recievercenter的信息应该是文件列表信息(fileInfo仅含文件名和文件大小)
+//        outputStream = new BufferedOutputStream(socket.getOutputStream());
+//
+//        System.out.println("请输入要传输的文件");
+//        Scanner scanner = new Scanner(System.in);
+//        String filePath = scanner.nextLine();
+//
+//        // 打开这个文件, 对这个文件进行分片处理, 将分片信息存储
+//
+//        // 设置到simpleInfo里面的文件名是不带路径的, 仅含有文件名.
+//        // 所以在sender段进行处理的时候, 先从配置文件中读取目标路径, 后面再进行更改
+//        RandomAccessFile file = new RandomAccessFile(filePath, "rw");
+//        String fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length());
+//        long fileLen = file.length();
+//        RecieverSimpleInfo fileInfo = getFileInfo(fileName, fileLen);
+//
+//        // TODO
+//        // 这里写到了一个文件的所有信息(simpleInfo)已经构造完成.
+//        // (但是服务器端发送给sender的信息应该是分片列表信息,
+//        // 而服务器端发送给recievercenter的信息应该是文件列表信息(fileInfo仅含文件名和文件大小)
     }
 
     // 给一个文件名和一个文件长度, 按照配置文件中的分片大小进行分片,
@@ -83,5 +83,13 @@ public class Server {
 
         fileInfo.setSectionInfoList(recieverSectionInfos);
         return fileInfo;
+    }
+
+    public static void main(String[] args) {
+        try {
+            new Server().start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

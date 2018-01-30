@@ -10,6 +10,7 @@ import multhreadfiletransport.observer.ISectionInfoListener;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -30,6 +31,8 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
     private List<IFileJoinListener> fileJoinListenerList;
 
     {
+        fileJoinListenerList = new ArrayList<>();
+        fileInfoList = new ArrayList<>();
         recieverMap = new RecieverMap();
     }
 
@@ -53,6 +56,14 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
         }
     }
 
+    public RecieverMap getRecieverMap() {
+        return recieverMap;
+    }
+
+    public RecieverServer getRecieverServer() {
+        return recieverServer;
+    }
+
     public void start() throws IOException {
         // 连接服务器, 然后接收服务器发来的目标文件列表和服务器分配的sender数量.
         // 但是此时是模拟服务器发送数据, 所有数据从键盘输入,
@@ -61,9 +72,13 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
             socket = new Socket("127.0.0.1", 33000);
         }
         recieveFromServer();
-
+        new Thread(this).start();
         // 将从服务器接收的文件列表信息保存一份List在自己的实例中, 并进行map初始化
         recieverMap.initRecieveMap(fileInfoList);
+
+        // 启动服务器之后, 就开始展现面板
+
+        System.out.println("center从server接收信息并填充map成功!");
 
     }
 
@@ -77,6 +92,7 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
         senderCount = scanner.nextInt();
         for (int i = 0; i < 1; i++) {
             FileInfo fileInfo = new FileInfo(scanner.next(), scanner.nextLong());
+            System.out.println(fileInfo.toString());
             fileInfoList.add(fileInfo);
         }
     }
@@ -84,9 +100,10 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
     @Override
     public void run() {
         // new出RecieverServer类, 进行持续监听
-        recieverServer = new RecieverServer(this);
         try {
-            recieverServer.start();
+            recieverServer = new RecieverServer(this);
+            recieverServer.setTargetFileCount(recieverMap.getTargetFileCount());
+            recieverServer.startReceive();
         } catch (IOException e) {
             e.printStackTrace();
         }

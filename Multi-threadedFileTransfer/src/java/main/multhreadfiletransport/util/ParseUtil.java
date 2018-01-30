@@ -66,4 +66,9 @@ public class ParseUtil {
 
         return sectionInfoList;
     }
+
+    // 4. 将一个文件名从绝对路径中解析出来
+    public static String parseFileName(String fileName) {
+        return fileName.substring(fileName.lastIndexOf('/') + 1, fileName.length());
+    }
 }

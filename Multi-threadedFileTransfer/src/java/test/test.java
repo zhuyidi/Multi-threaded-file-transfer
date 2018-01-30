@@ -1,3 +1,5 @@
+import multhreadfiletransport.util.ParseUtil;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -8,27 +10,8 @@ import java.util.TreeSet;
  */
 public class test {
     public static void main(String[] args) {
-        LinkedList<aaa> list = new LinkedList();
-
-        aaa a1 = new aaa(-1);
-        aaa a2 = new aaa(1);
-        aaa a3 = new aaa(0);
-
-
-        list.add(a1);
-        list.add(a2);
-
-        int index = 0;
-        for (aaa a : list) {
-            if(a.getI() > a3.getI()) {
-                index = list.indexOf(a);
-            }
-        }
-        list.add(index, a3);
-        System.out.println(list);
+        System.out.println(ParseUtil.parseFileName("/home/dela/haha.c"));
     }
-
-
 }
 
 class aaa implements Comparable<aaa>{

@@ -102,4 +102,17 @@ public class RecieverSimpleInfo {
     public void setSectionInfoList(LinkedList<RecieverSectionInfo> sectionInfoList) {
         this.sectionInfoList = sectionInfoList;
     }
+
+    @Override
+    public String toString() {
+        return "RecieverSimpleInfo{" +
+                "targetFileName='" + targetFileName + '\'' +
+                ", fileLen=" + fileLen +
+                ", recieveMark=" + recieveMark +
+                ", recieveLen=" + recieveLen +
+                ", saveMark=" + saveMark +
+                ", saveLen=" + saveLen +
+                ", sectionInfoList=" + sectionInfoList +
+                '}';
+    }
 }

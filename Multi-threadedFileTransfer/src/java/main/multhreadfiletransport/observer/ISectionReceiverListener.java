@@ -7,7 +7,8 @@ import multhreadfiletransport.model.RecieverSectionInfo;
  * Created by dela on 1/29/18.
  */
 
-// 与RT相关联的一组listener和speaker, 用于监听文件接收情况, 以便反映给view
+// 与RT相关联的一组listener和speaker
+// 用于RC监听文件接收情况, 以便反映给view
 public interface ISectionReceiverListener {
     // 已经接收到了sender要发送的section列表(在接收列表结束后调用)
     void onGetSectionList(RecieverThread recieverThread);

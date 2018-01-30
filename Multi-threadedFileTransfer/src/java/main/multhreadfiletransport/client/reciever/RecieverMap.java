@@ -3,6 +3,8 @@ package multhreadfiletransport.client.reciever;
 import multhreadfiletransport.model.FileInfo;
 import multhreadfiletransport.model.RecieverSectionInfo;
 import multhreadfiletransport.model.RecieverSimpleInfo;
+import multhreadfiletransport.util.PackageUtil;
+import multhreadfiletransport.util.ParseUtil;
 
 import java.util.*;
 
@@ -12,14 +14,18 @@ import java.util.*;
  */
 public class RecieverMap {
     private Map<String, RecieverSimpleInfo> fileMap;
+    private int targetFileCount;    //所有的targetfile
+    private int markTragetFileCount; // 已经标记完的targetFile
 
     public RecieverMap() {
+        markTragetFileCount = 0;
         fileMap = new HashMap<>();
         // 用集合操作类对map进行线程安全处理
         Collections.synchronizedMap(fileMap);
     }
 
     public RecieverMap(Map<String, RecieverSimpleInfo> fileMap) {
+        markTragetFileCount = 0;
         this.fileMap = fileMap;
     }
 
@@ -31,10 +37,41 @@ public class RecieverMap {
         this.fileMap = fileMap;
     }
 
+    public int getTargetFileCount() {
+        return fileMap.size();
+    }
+
+    public void setTargetFileCount(int targetFileCount) {
+        this.targetFileCount = targetFileCount;
+    }
+
+    // 在filemap中查询已经mark完的所有section的targetfile数量
+    public int getMarkTragetFileCount() {
+        // TODO 应该在map中查询已经mark完所有的section的targetFile的数量
+        int count = 0;
+        for (String filename : fileMap.keySet()) {
+            RecieverSimpleInfo simpleInfo = fileMap.get(filename);
+            List<RecieverSectionInfo> sectionInfos = simpleInfo.getSectionInfoList();
+            for (RecieverSectionInfo sectionInfo : sectionInfos) {
+                if (!sectionInfo.isSaveMark()) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        markTragetFileCount = fileMap.size() - count;
+
+        System.out.println("markTargetFile的数量:" + markTragetFileCount);
+
+        return markTragetFileCount;
+    }
+
     public void initRecieveMap(List<FileInfo> fileInfoList) {
         for (FileInfo fileInfo : fileInfoList) {
+            String fileName = ParseUtil.parseFileName(fileInfo.getFileName());
             fileMap.put(fileInfo.getFileName(), new RecieverSimpleInfo(fileInfo.getFileName(), fileInfo.getFileLen()));
         }
+        System.out.println("fileMap:" + fileMap);
     }
 
     public void setSectionInfoList(List<RecieverSectionInfo> sectionInfoList) {
@@ -45,6 +82,9 @@ public class RecieverMap {
 
             // 1. 得到simpleFileInfo
             RecieverSimpleInfo simpleInfo = getSimpleInfoBySection(sectionInfo);
+
+            System.out.println(simpleInfo);
+
             // 2. 设置recieveMark和recieveLen
             simpleInfo.setRecieveMark(true);
             simpleInfo.setReciveLen(simpleInfo.getRecieveLen() + sectionInfo.getSectionLen());
@@ -64,8 +104,12 @@ public class RecieverMap {
     public void setSectionRecieveMark(RecieverSectionInfo sectionInfo) {
         RecieverSimpleInfo simpleInfo = getSimpleInfoBySection(sectionInfo);
 
+        System.out.println("section信息: " + sectionInfo);
+
         for (RecieverSectionInfo sectionInfo1 : simpleInfo.getSectionInfoList()) {
             if(sectionInfo.getTempFileName() == sectionInfo1.getTempFileName()) {
+                System.out.println("section1信息: " + sectionInfo1);
+
                 sectionInfo1.setRecieveMark(true);
             }
         }

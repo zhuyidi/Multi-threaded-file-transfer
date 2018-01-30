@@ -6,8 +6,10 @@ import multhreadfiletransport.util.ParseUtil;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 /**
  * Created by dela on 1/23/18.
@@ -31,14 +33,17 @@ public class SenderCenter {
         headerSize = Integer.parseInt(resourceBundle.getString("headerSize"));
         bufferSize = Integer.parseInt(resourceBundle.getString("bufferSize"));
         sendPath = resourceBundle.getString("sendPath");
+
+        buffer = new byte[bufferSize];
+        sectionInfoList = new ArrayList<>();
     }
 
     public SenderCenter() {
-        try {
-            serverSocket = new Socket("127.0.0.1", 33001);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            serverSocket = new Socket("127.0.0.1", 33000);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public SenderCenter(Socket serverSocket) {
@@ -50,7 +55,8 @@ public class SenderCenter {
     // 然后连接RS, 开始发送数据
     public void start() throws IOException {
         // 1. 读取来自服务器端的sectionlist信息
-        recieverFormServer();
+//        recieverFormServer();
+        testInput();
 
         // 2. 连接RS, 并发送总体的sectionlist
         connectRecieverServer();
@@ -58,6 +64,21 @@ public class SenderCenter {
         // 3. 发送文件数据
         sendSection();
     }
+
+    // 临时测试方法
+    public void testInput() {
+        Scanner scanner = new Scanner(System.in);
+        int sectionCount = scanner.nextInt();
+        for (int i = 0; i < sectionCount; i++) {
+            RecieverSectionInfo sectionInfo = new RecieverSectionInfo(scanner.next(),
+                    scanner.next(), scanner.nextLong(), scanner.nextLong());
+            sectionInfoList.add(sectionInfo);
+        }
+        sectionInfoString = PackageUtil.packageSectionInfoList(sectionInfoList);
+        System.out.println("sectionListstr:" + sectionInfoList);
+
+    }
+
 
     public void sendSection() throws IOException {
         for (RecieverSectionInfo sectionInfo : sectionInfoList) {
@@ -71,14 +92,23 @@ public class SenderCenter {
             // 移动文件指针到offset那个地方, 然后读取sectionlen个字节发送给RT
             // 传输文件头部
             String fileName = sendPath + sectionInfo.getTargetFileName();
-            RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");
+            RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "rw");
+
+            System.out.println("在传输section之前, 先看一下它的offset:" + sectionInfo.getOffset());
+
             randomAccessFile.seek(sectionInfo.getOffset());
 
             // 传输文件内容
             System.out.println("开始传输文件");
             long overLen = sectionInfo.getSectionLen();
+
+            System.out.println("该section的大小:" + overLen);
+
             while (overLen > 0) {
                 int size = overLen > bufferSize ? bufferSize : (int) overLen;
+
+                System.out.println("决定的buffer的size: " + size);
+
                 int temp = randomAccessFile.read(buffer, 0, size);
                 System.out.println("读到的文件大小：" + temp);
                 recieveOutputStream.write(buffer, 0, size);
@@ -129,6 +159,11 @@ public class SenderCenter {
 
         // 2. 发送总体的sectionList
         byte[] sectionList = PackageUtil.addHeader(sectionInfoString);
+
+        System.out.println("byte sectionlist:" + sectionList);
+
         recieveOutputStream.write(sectionList, 0, sectionList.length);
+
+        System.out.println("sectionlist已经发送完毕");
     }
 }

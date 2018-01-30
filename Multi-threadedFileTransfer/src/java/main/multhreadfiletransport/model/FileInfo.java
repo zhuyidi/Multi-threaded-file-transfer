@@ -31,4 +31,12 @@ public class FileInfo {
     public void setFileLen(long fileLen) {
         this.fileLen = fileLen;
     }
+
+    @Override
+    public String toString() {
+        return "FileInfo{" +
+                "fileName='" + fileName + '\'' +
+                ", fileLen=" + fileLen +
+                '}';
+    }
 }
