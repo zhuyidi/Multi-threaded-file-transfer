@@ -373,7 +373,7 @@ public class ReceiveProgressDialog extends JDialog implements IFileJoinListener,
         jlblActionReport.setText(receivedFileInfo());
     }
 
-    // 当一个sender发送文件借书之后, 删除这个sender的线程和进度条所对应的进度条, 重新绘制JDialog
+    // 当一个sender发送文件结束之后, 删除这个sender的线程和进度条所对应的进度条, 重新绘制JDialog
     // synchronized
     @Override
     public void onReceiveOver(RecieverThread recieverThread) {

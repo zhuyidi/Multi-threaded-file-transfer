@@ -14,4 +14,5 @@ public interface ISectionInfoSpeaker {
     void sendSectionInfoList();
     void sendSectionInfo(RecieverSectionInfo sectionInfo);
     void sendSectionSaveOK(RecieverSectionInfo sectionInfo);
+    void sendAllSectionReceiveOk();
 }

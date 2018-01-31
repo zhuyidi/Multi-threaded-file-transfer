@@ -124,6 +124,20 @@ public class RecieverSectionInfo implements Comparable<RecieverSectionInfo> {
     }
 
     @Override
+    public String toString() {
+        return "RecieverSectionInfo{" +
+                "targetFileName='" + targetFileName + '\'' +
+                ", tempFileName='" + tempFileName + '\'' +
+                ", offset=" + offset +
+                ", sectionLen=" + sectionLen +
+                ", recieveMark=" + recieveMark +
+                ", recieveLen=" + recieveLen +
+                ", saveMark=" + saveMark +
+                ", saveLen=" + saveLen +
+                '}';
+    }
+
+    @Override
     public int compareTo(RecieverSectionInfo o) {
         return this.getOffset() > o.getOffset() ? 1 : -1;
     }

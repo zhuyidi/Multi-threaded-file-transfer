@@ -1,3 +1,4 @@
+import multhreadfiletransport.util.PackageUtil;
 import multhreadfiletransport.util.ParseUtil;
 
 import java.util.Iterator;
@@ -10,7 +11,7 @@ import java.util.TreeSet;
  */
 public class test {
     public static void main(String[] args) {
-        System.out.println(ParseUtil.parseFileName("/home/dela/haha.c"));
+        System.out.println(0 | 8 | (0 + 8) | (8 - (0 + 8)));
     }
 }
 

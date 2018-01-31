@@ -63,6 +63,7 @@ public class SenderCenter {
 
         // 3. 发送文件数据
         sendSection();
+
     }
 
     // 临时测试方法
@@ -75,7 +76,7 @@ public class SenderCenter {
             sectionInfoList.add(sectionInfo);
         }
         sectionInfoString = PackageUtil.packageSectionInfoList(sectionInfoList);
-        System.out.println("sectionListstr:" + sectionInfoList);
+        System.out.println("sectionListstr:" + sectionInfoString);
 
     }
 
@@ -112,6 +113,7 @@ public class SenderCenter {
                 int temp = randomAccessFile.read(buffer, 0, size);
                 System.out.println("读到的文件大小：" + temp);
                 recieveOutputStream.write(buffer, 0, size);
+                recieveOutputStream.flush();
                 overLen -= size;
             }
             System.out.println("一个片段传输完毕");
@@ -161,6 +163,7 @@ public class SenderCenter {
         byte[] sectionList = PackageUtil.addHeader(sectionInfoString);
 
         System.out.println("byte sectionlist:" + sectionList);
+        System.out.println("byte size:" + sectionList.length);
 
         recieveOutputStream.write(sectionList, 0, sectionList.length);
 

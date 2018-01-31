@@ -14,4 +14,5 @@ public interface ISectionInfoListener {
     void getSectionInfoList(List<RecieverSectionInfo> sectionInfoList);
     void getSectionInfo(RecieverSectionInfo sectionInfo);
     void getSectionSaveOK(RecieverSectionInfo sectionInfo);
+    void getAllSectionSaveOk();
 }

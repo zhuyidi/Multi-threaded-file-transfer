@@ -2,16 +2,13 @@ package multhreadfiletransport.client.reciever;
 
 import multhreadfiletransport.model.FileInfo;
 import multhreadfiletransport.model.RecieverSectionInfo;
-import multhreadfiletransport.observer.IFileJoinListener;
-import multhreadfiletransport.observer.IFileJoinSpeaker;
-import multhreadfiletransport.observer.IFileReceiverCenterListener;
-import multhreadfiletransport.observer.ISectionInfoListener;
+import multhreadfiletransport.model.RecieverSimpleInfo;
+import multhreadfiletransport.observer.*;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.Scanner;
 
 /**
@@ -27,13 +24,20 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
     private RecieverMap recieverMap;    // 存储文件所有信息的map类
     private int senderCount;    // 服务器分配的sender的数量
     private RecieverServer recieverServer;  // RT持续accept, 连接sender, 一旦连接完璧, 立即关闭
-
     private List<IFileJoinListener> fileJoinListenerList;
+    private String targetPath;
+    private byte[] buffer;
+    private int bufferSize;
+
 
     {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("file-config");
+        targetPath = resourceBundle.getString("targetPath");
+        bufferSize = Integer.parseInt(resourceBundle.getString("bufferSize"));
+        buffer = new byte[bufferSize];
         fileJoinListenerList = new ArrayList<>();
         fileInfoList = new ArrayList<>();
-        recieverMap = new RecieverMap();
+        recieverMap = new RecieverMap(this);
     }
 
     public RecieverCenter() {
@@ -97,11 +101,58 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
         }
     }
 
+    // 接收完所有的文件, 开始文件合并
+    public void joinFile() throws IOException {
+        System.out.println("合并方法中");
+
+        // 合并文件要先拿到map里面所有的simpleFile, 然后拿到每一个simple的sectionList, 然后再分别合并.
+        Map<String, RecieverSimpleInfo> fileMap = recieverMap.getFileMap();
+
+        int joinCount = 0;
+        for (String targetFileName : fileMap.keySet()) {
+            RecieverSimpleInfo simpleInfo = fileMap.get(targetFileName);
+            joinOneSimpleFile(simpleInfo);
+            joinCount++;
+            // 合并完一个文件, 将当前的合并文件的数量发送给view, 然后通知view已经合并完一个targetFile了
+            for (IFileJoinListener listener : fileJoinListenerList) {
+                listener.onGetJoinCount(joinCount);
+                listener.onJoinOne();
+            }
+        }
+        // 所有的文件全部合并完
+        for (IFileJoinListener listener : fileJoinListenerList) {
+            listener.onAllDone();
+        }
+    }
+
+    // 合并一个targetFile
+    public void joinOneSimpleFile(RecieverSimpleInfo simpleInfo) throws IOException {
+        String targetFileName = targetPath + simpleInfo.getTargetFileName();
+        RandomAccessFile targetFile = new RandomAccessFile(targetFileName, "rw");
+
+        List<RecieverSectionInfo> sectionInfos = simpleInfo.getSectionInfoList();
+        for (RecieverSectionInfo sectionInfo : sectionInfos) {
+            String sectionName = targetPath + sectionInfo.getTempFileName();
+            RandomAccessFile sectionFile = new RandomAccessFile(sectionName, "rw");
+            int readlen = 0;
+            int temp = 0;
+            while (readlen != sectionInfo.getSectionLen()) {
+                temp = sectionFile.read(buffer, 0, bufferSize);
+                targetFile.write(buffer, 0, temp);
+                readlen += temp;
+            }
+            sectionFile.close();
+            File sectionTempFile = new File(sectionName);
+            sectionTempFile.delete();
+        }
+        targetFile.close();
+    }
+
     @Override
     public void run() {
         // new出RecieverServer类, 进行持续监听
         try {
-            recieverServer = new RecieverServer(this);
+            recieverServer = new RecieverServer(this, senderCount);
             recieverServer.setTargetFileCount(recieverMap.getTargetFileCount());
             recieverServer.startReceive();
         } catch (IOException e) {
@@ -125,10 +176,28 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
     }
 
     @Override
-    public synchronized void getSectionSaveOK(RecieverSectionInfo sectionInfo) {
+    public void getSectionSaveOK(RecieverSectionInfo sectionInfo) {
         // 接收分片文件信息完成, 这只targetFile的len
         // 将这个section里面的所有savemark和savelen等信息都保存到map中
         recieverMap.setSaveMarkAndLen(sectionInfo);
+    }
+
+    @Override
+    public void getAllSectionSaveOk() {
+        // 当所有的section都发送完毕时, RC就开始合并文件
+
+        System.out.println("所有的section都已经接收完毕了, 要开始合并了");
+
+        // 通知view已经开始合并
+        for (IFileJoinListener listener : fileJoinListenerList) {
+            listener.onBeginJoin();
+        }
+
+        try {
+            joinFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

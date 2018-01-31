@@ -1,7 +1,9 @@
 package multhreadfiletransport.client.reciever;
 
+import multhreadfiletransport.model.RecieverSectionInfo;
 import multhreadfiletransport.observer.IReceiverServerListener;
 import multhreadfiletransport.observer.IReceiverServerSpeaker;
+import multhreadfiletransport.observer.ISectionInfoListener;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -71,16 +73,8 @@ public class RecieverServer implements IReceiverServerSpeaker {
                 goon = false;
             }
         }
+        System.out.println("receiverServer已经关闭");
     }
-
-//    @Override
-//    public void run() {
-//        try {
-//            startReceive();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public void addFileReceiverListener(IReceiverServerListener serverListener) {

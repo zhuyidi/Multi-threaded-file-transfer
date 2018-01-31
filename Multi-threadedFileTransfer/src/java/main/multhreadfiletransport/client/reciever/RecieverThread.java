@@ -157,6 +157,8 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         recieveFile(sectionInfo);
         sectionInfo.setSaveMark(true);
         sendSectionSaveOK(sectionInfo);
+        // 4. 当这个分片文件全部接收完毕之后, 通知view
+        sendEndReceiveOneSection(this);
 
         System.out.println("接收一个分片文件结束");
     }
@@ -170,15 +172,14 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         int haveLen = 0;
         while (haveLen != sectionInfo.getSectionLen()) {
             int temp = inputStream.read(buffer, 0, bufferSize);
-            System.out.println("本次接收到的大小：" + temp);
+//            System.out.println("本次接收到的大小：" + temp);
             file.write(buffer, 0, temp);
             // 每读成功一次, 就通知view一次
             sendOnReceiving(temp);
 
             haveLen += temp;
         }
-        // 当这个文件全部接收完毕之后, 通知view
-        sendEndReceiveOneSection(this);
+
         file.close();
     }
 
@@ -191,13 +192,15 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         byte[] tempInfoLen = new byte[headerSize];
 
         System.out.println("headersize: " + headerSize);
+        System.out.println("tempinfolen byte : " + tempInfoLen.length);
 
         int temp = 0;
         int readlen = 0;
 
 
         while (temp != headerSize) {
-            readlen = inputStream.read(tempInfoLen, temp, headerSize);
+            int len = headerSize - temp;
+            readlen = inputStream.read(tempInfoLen, temp, len);
 
             System.out.println("readlen" + readlen);
 
@@ -237,6 +240,7 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
     @Override
     public void sendSectionInfoList() {
         System.out.println("将接收到的列表信息传送给center");
+        System.out.println("RT中的sectionList:" + sectionFileInfoList);
         for (ISectionInfoListener listener : sectionInfoListeners) {
             listener.getSectionInfoList(sectionFileInfoList);
         }
@@ -256,6 +260,12 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         for (ISectionInfoListener listener : sectionInfoListeners) {
             listener.getSectionSaveOK(sectionInfo);
         }
+    }
+
+    // 所有的sender发送的所有section都已经接收完毕
+    @Override
+    public void sendAllSectionReceiveOk() {
+
     }
 
     // 2. 下面这些是ISectionReceiverSpeaker接口的方法
