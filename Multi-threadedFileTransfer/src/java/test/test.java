@@ -1,10 +1,7 @@
 import multhreadfiletransport.util.PackageUtil;
 import multhreadfiletransport.util.ParseUtil;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by dela on 1/25/18.
@@ -12,6 +9,11 @@ import java.util.TreeSet;
 public class test {
     public static void main(String[] args) {
         System.out.println(0 | 8 | (0 + 8) | (8 - (0 + 8)));
+        List<Integer> a = new ArrayList<>();
+        List<Integer> b = new ArrayList<>();
+        List<Integer> c = new ArrayList<>();
+        List<Integer> d = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
     }
 }
 

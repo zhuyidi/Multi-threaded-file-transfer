@@ -50,9 +50,6 @@ public class SenderCenter {
         this.serverSocket = serverSocket;
     }
 
-    // TODO 此处可能存在缓冲区buffer未清空带来的问题
-    // 在sender中, 应该先接收来自服务器的要发送哪些信息
-    // 然后连接RS, 开始发送数据
     public void start() throws IOException {
         // 1. 读取来自服务器端的sectionlist信息
 //        recieverFormServer();
@@ -63,7 +60,6 @@ public class SenderCenter {
 
         // 3. 发送文件数据
         sendSection();
-
     }
 
     // 临时测试方法
@@ -76,8 +72,6 @@ public class SenderCenter {
             sectionInfoList.add(sectionInfo);
         }
         sectionInfoString = PackageUtil.packageSectionInfoList(sectionInfoList);
-        System.out.println("sectionListstr:" + sectionInfoString);
-
     }
 
 
@@ -94,36 +88,25 @@ public class SenderCenter {
             // 传输文件头部
             String fileName = sendPath + sectionInfo.getTargetFileName();
             RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "rw");
-
-            System.out.println("在传输section之前, 先看一下它的offset:" + sectionInfo.getOffset());
-
             randomAccessFile.seek(sectionInfo.getOffset());
 
             // 传输文件内容
-            System.out.println("开始传输文件");
             long overLen = sectionInfo.getSectionLen();
-
-            System.out.println("该section的大小:" + overLen);
-
             while (overLen > 0) {
                 int size = overLen > bufferSize ? bufferSize : (int) overLen;
-
-                System.out.println("决定的buffer的size: " + size);
-
                 int temp = randomAccessFile.read(buffer, 0, size);
-                System.out.println("读到的文件大小：" + temp);
                 recieveOutputStream.write(buffer, 0, size);
                 recieveOutputStream.flush();
                 overLen -= size;
             }
-            System.out.println("一个片段传输完毕");
         }
     }
 
     public void recieverFormServer() throws IOException {
-        serverInputStream = new BufferedInputStream(serverSocket.getInputStream());
         // 接收sectionList信息, 先接收size个字节, 然后求出后面的len, 再接收后面的信息
         // 先接收headerSize求出后面info的len, 再接收len个byte, 最后转换成字符串返回
+
+        serverInputStream = new BufferedInputStream(serverSocket.getInputStream());
 
         //1. 先求出len
         byte[] tempInfoLen = new byte[headerSize];
@@ -161,12 +144,6 @@ public class SenderCenter {
 
         // 2. 发送总体的sectionList
         byte[] sectionList = PackageUtil.addHeader(sectionInfoString);
-
-        System.out.println("byte sectionlist:" + sectionList);
-        System.out.println("byte size:" + sectionList.length);
-
         recieveOutputStream.write(sectionList, 0, sectionList.length);
-
-        System.out.println("sectionlist已经发送完毕");
     }
 }

@@ -55,19 +55,13 @@ public class RecieverMap implements ISectionInfoSpeaker {
 
     // 在filemap中查询已经mark完的所有section的targetfile数量
     public int getMarkTragetFileCount() {
-        // TODO 应该在map中查询已经mark完所有的section的targetFile的数量
-//        int count = 0;
         for (String filename : fileMap.keySet()) {
             RecieverSimpleInfo simpleInfo = fileMap.get(filename);
-            System.out.println("getmarktarget中的simple" + simpleInfo);
             if (simpleInfo.isSaveMark()) {
                 markTragetFileCount++;
             }
         }
-//        System.out.println("markTargetFile的数量:" + markTragetFileCount);
 
-        System.out.println("已经全部标记的targetFile数量:" + markTragetFileCount);
-        System.out.println("map里全部的targetFile数量:" + fileMap.size());
         if (markTragetFileCount == fileMap.size()) {
             sendAllSectionReceiveOk();
         }
@@ -80,7 +74,6 @@ public class RecieverMap implements ISectionInfoSpeaker {
             String fileName = ParseUtil.parseFileName(fileInfo.getFileName());
             fileMap.put(fileInfo.getFileName(), new RecieverSimpleInfo(fileInfo.getFileName(), fileInfo.getFileLen()));
         }
-        System.out.println("fileMap:" + fileMap);
     }
 
     public void setSectionInfoList(List<RecieverSectionInfo> sectionInfoList) {
@@ -91,8 +84,6 @@ public class RecieverMap implements ISectionInfoSpeaker {
 
             // 1. 得到simpleFileInfo
             RecieverSimpleInfo simpleInfo = getSimpleInfoBySection(sectionInfo);
-
-            System.out.println(simpleInfo);
 
             // 2. 设置recieveMark和recieveLen
             simpleInfo.setRecieveMark(true);
@@ -106,22 +97,15 @@ public class RecieverMap implements ISectionInfoSpeaker {
                     index = sectionInfos.indexOf(sectionInfo1);
                 }
             }
-//            System.out.println("此section插入之前");
             sectionInfos.add(index, sectionInfo);
-//            System.out.println("此section插入之后");
         }
     }
 
     public void setSectionRecieveMark(RecieverSectionInfo sectionInfo) {
         RecieverSimpleInfo simpleInfo = getSimpleInfoBySection(sectionInfo);
 
-//        System.out.println("setreceivemark中的section信息: " + sectionInfo);
-        System.out.println("setreceivemark中的simpleInfo:" + simpleInfo);
-
         for (RecieverSectionInfo sectionInfo1 : simpleInfo.getSectionInfoList()) {
             if(sectionInfo.getTempFileName().equals(sectionInfo1.getTempFileName())) {
-//                System.out.println("section1信息: " + sectionInfo1);
-
                 sectionInfo1.setRecieveMark(true);
             }
         }
@@ -138,16 +122,12 @@ public class RecieverMap implements ISectionInfoSpeaker {
         // 如果等于, 就将saveMark(是否保存完的标记)设置为true
         RecieverSimpleInfo simpleInfo = getSimpleInfoBySection(sectionInfo);
         simpleInfo.setSaveLen(simpleInfo.getSaveLen() + sectionInfo.getSectionLen());
-        System.out.println("setsaveandmark中的simpleInfo:" + simpleInfo);
-        System.out.println(simpleInfo.getSaveLen() == simpleInfo.getFileLen());
         if(simpleInfo.getSaveLen() == simpleInfo.getFileLen()) {
             simpleInfo.setSaveMark(true);
         }
 
         for (RecieverSectionInfo sectionInfo1 : simpleInfo.getSectionInfoList()) {
-//            System.out.println("setlenandmark的section: " + sectionInfo);
             if (sectionInfo.getTempFileName().equals(sectionInfo1.getTempFileName())) {
-//                System.out.println("setlenandmark的section1: " + sectionInfo1);
                 sectionInfo1.setSaveMark(true);
                 sectionInfo1.setSaveLen(sectionInfo.getSectionLen());
             }

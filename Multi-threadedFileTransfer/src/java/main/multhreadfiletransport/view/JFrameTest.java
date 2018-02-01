@@ -14,7 +14,7 @@ public class JFrameTest {
 
     public static void main(String[] args) {
         JFrame jFrame = new JFrame();
-        jFrame.setSize(400, 300);
+        jFrame.setSize(600, 500);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
 
@@ -29,7 +29,5 @@ public class JFrameTest {
         receiveProgressDialog.initView(recieverCenter, recieverMap);
 
         receiveProgressDialog.setVisible(true);
-
-        System.out.println("窗口已经展现出来了!");
     }
 }

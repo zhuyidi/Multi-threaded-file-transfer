@@ -8,6 +8,7 @@ import multhreadfiletransport.observer.ISectionReceiverSpeaker;
 import multhreadfiletransport.util.ParseUtil;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.Socket;
@@ -20,6 +21,7 @@ import java.util.ResourceBundle;
  */
 public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         ISectionReceiverSpeaker {
+
     private Socket socket;
     private BufferedInputStream inputStream;
     private int headerSize;
@@ -69,14 +71,6 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         this.sectionFileInfoList = sectionFileInfoList;
     }
 
-    public List<ISectionInfoListener> getSectionInfoListeners() {
-        return sectionInfoListeners;
-    }
-
-    public void setSectionInfoListeners(List<ISectionInfoListener> sectionInfoListeners) {
-        this.sectionInfoListeners = sectionInfoListeners;
-    }
-
     public int getTargetFileCount() {
         return targetFileCount;
     }
@@ -89,22 +83,16 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
     public void run() {
         // 先接收整个分片文件列表, 然后再接收每个分片
         try {
-
-            System.out.println("当前线程:" + Thread.currentThread());
-
             // 1. 接收整个分片文件列表
             recieveSectionInfoList();
 
             // 2. 接收每一个分片文件
             int sectionCount = sectionFileInfoList.size();
-
-            System.out.println("分片文件的个数有:" + sectionCount);
-
             while(sectionCount != 0) {
                 recieveSection();
                 sectionCount--;
             }
-            //这个sender的全部section全部发送完毕, 通知view
+            // 当这个sender的全部section全部发送完毕, 通知view
             sendOnReceiveOver(this);
 
             // 3. 接收完毕, 关闭输入流和socket
@@ -116,9 +104,6 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
     }
 
     public void recieveSectionInfoList() throws IOException {
-
-        System.out.println("开始接收分片文件列表信息");
-
         // 接收分片文件列表包头信息
         String sectionListInfo = getHeaderInfo();
 
@@ -132,19 +117,15 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         // 3. 将sectionlist发送给view(其实在这里用两个关于section的观察者模式是不合理的, 后期再整合)
         // 拉模式
         sendOnGetSectionList(this);
-
-        System.out.println("接收分片文件列表信息完毕");
     }
 
     public void recieveSection() throws IOException {
-
-        System.out.println("开始接收每一个分片文件");
-
         // 先接收分片包头, 再解析, 然后通知RC, 再接收分片文件正式内容
         RecieverSectionInfo sectionInfo;
 
         // 1. 接收包头
         String sectionString = getHeaderInfo();
+
         // 2. 解析并通知RC和view
         sectionInfo = ParseUtil.parseStringToSectionInfo(sectionString);
         sectionInfo.setRecieveMark(true);
@@ -157,10 +138,9 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         recieveFile(sectionInfo);
         sectionInfo.setSaveMark(true);
         sendSectionSaveOK(sectionInfo);
+
         // 4. 当这个分片文件全部接收完毕之后, 通知view
         sendEndReceiveOneSection(this);
-
-        System.out.println("接收一个分片文件结束");
     }
 
     public void recieveFile(RecieverSectionInfo sectionInfo) throws IOException {
@@ -168,42 +148,29 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
         RandomAccessFile file = new RandomAccessFile(filePath, "rw");
 
         // 开始接收文件
-        System.out.println("开始接收文件");
         int haveLen = 0;
         while (haveLen != sectionInfo.getSectionLen()) {
             int temp = inputStream.read(buffer, 0, bufferSize);
-//            System.out.println("本次接收到的大小：" + temp);
             file.write(buffer, 0, temp);
             // 每读成功一次, 就通知view一次
             sendOnReceiving(temp);
-
             haveLen += temp;
         }
-
         file.close();
     }
 
-    // 读取头部信息(包括大包头(section信息列表), 小包头(每个section信息))
     public String getHeaderInfo() throws IOException {
+        // 读取头部信息(包括大包头(section信息列表), 小包头(每个section信息))
         // 先接收headerSize求出后面info的len, 再接收len个byte, 最后转换成字符串返回
-        System.out.println("现在开始解析包头");
 
         //1. 先求出len
         byte[] tempInfoLen = new byte[headerSize];
-
-        System.out.println("headersize: " + headerSize);
-        System.out.println("tempinfolen byte : " + tempInfoLen.length);
-
         int temp = 0;
         int readlen = 0;
-
 
         while (temp != headerSize) {
             int len = headerSize - temp;
             readlen = inputStream.read(tempInfoLen, temp, len);
-
-            System.out.println("readlen" + readlen);
-
             temp += readlen;
         }
         long infoLen = ParseUtil.getByteStrLen(tempInfoLen);
@@ -239,8 +206,6 @@ public class RecieverThread implements Runnable, ISectionInfoSpeaker,
     // 发送给RC接收到的sectionList
     @Override
     public void sendSectionInfoList() {
-        System.out.println("将接收到的列表信息传送给center");
-        System.out.println("RT中的sectionList:" + sectionFileInfoList);
         for (ISectionInfoListener listener : sectionInfoListeners) {
             listener.getSectionInfoList(sectionFileInfoList);
         }

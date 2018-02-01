@@ -18,6 +18,7 @@ import java.util.Scanner;
 // 接收中心首先收到文件的信息, 然后开启接收服务器, 在接收服务器中开启接收线程
 public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
         IFileReceiverCenterListener, Runnable{
+
     private Socket socket;    // 与server连接的socket
     private BufferedInputStream inputStream;    // 与server连接的socket的输入流
     private List<FileInfo> fileInfoList;    // 从server那里接收到的文件列表
@@ -28,7 +29,6 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
     private String targetPath;
     private byte[] buffer;
     private int bufferSize;
-
 
     {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("file-config");
@@ -75,15 +75,15 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
         if (null == socket) {
             socket = new Socket("127.0.0.1", 33000);
         }
+
+        // 从服务器接收将要接收的targetfileList, 并启动RS
         recieveFromServer();
         new Thread(this).start();
+
         // 将从服务器接收的文件列表信息保存一份List在自己的实例中, 并进行map初始化
         recieverMap.initRecieveMap(fileInfoList);
 
         // 启动服务器之后, 就开始展现面板
-
-        System.out.println("center从server接收信息并填充map成功!");
-
     }
 
     public void recieveFromServer() {
@@ -92,7 +92,6 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
 
     public void inputTargetFileInfo() {
         Scanner scanner = new Scanner(System.in);
-
         senderCount = scanner.nextInt();
         for (int i = 0; i < 1; i++) {
             FileInfo fileInfo = new FileInfo(scanner.next(), scanner.nextLong());
@@ -103,8 +102,6 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
 
     // 接收完所有的文件, 开始文件合并
     public void joinFile() throws IOException {
-        System.out.println("合并方法中");
-
         // 合并文件要先拿到map里面所有的simpleFile, 然后拿到每一个simple的sectionList, 然后再分别合并.
         Map<String, RecieverSimpleInfo> fileMap = recieverMap.getFileMap();
 
@@ -119,7 +116,8 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
                 listener.onJoinOne();
             }
         }
-        // 所有的文件全部合并完
+
+        // 所有的文件全部合并完, 通知监听者们
         for (IFileJoinListener listener : fileJoinListenerList) {
             listener.onAllDone();
         }
@@ -151,43 +149,37 @@ public class RecieverCenter implements ISectionInfoListener, IFileJoinSpeaker,
     @Override
     public void run() {
         // new出RecieverServer类, 进行持续监听
-        try {
-            recieverServer = new RecieverServer(this, senderCount);
-            recieverServer.setTargetFileCount(recieverMap.getTargetFileCount());
-            recieverServer.startReceive();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        recieverServer = new RecieverServer(this, senderCount);
+        recieverServer.setTargetFileCount(recieverMap.getTargetFileCount());
+        recieverServer.startReceive();
     }
 
     // 对于listener里面这一系列方法对map进行一系列的操作的时候, 应该是对方法加锁的,
     // 但是由于现在在map类里面对fileMap这个hashmap进行了集合类的线程安全操作, 保证map的线程安全性
-    // 所以在这里先去掉synchronized关键字及你想嗯测试, 看会不会出现线程不安全的问题. 出现问题再解决问题
+    // 所以在这里先去掉synchronized关键字进行测试, 看会不会出现线程不安全的问题. 出现问题再解决问题
+
+    // 将这个sectionlist进行解析, 填充到map类里面
     @Override
     public void getSectionInfoList(List<RecieverSectionInfo> sectionInfoList) {
-        // 将这个sectionlist进行解析, 填充到map类里面
         recieverMap.setSectionInfoList(sectionInfoList);
     }
 
+    // 这个section进行解析, 填充map类(主要是进行recievemark的标记)
     @Override
     public  void getSectionInfo(RecieverSectionInfo sectionInfo) {
-        // 这个section进行解析, 填充map类(主要是进行recievemark的标记)
         recieverMap.setSectionRecieveMark(sectionInfo);
     }
 
+    // 接收分片文件信息完成, 这只targetFile的len
+    // 将这个section里面的所有savemark和savelen等信息都保存到map中
     @Override
     public void getSectionSaveOK(RecieverSectionInfo sectionInfo) {
-        // 接收分片文件信息完成, 这只targetFile的len
-        // 将这个section里面的所有savemark和savelen等信息都保存到map中
         recieverMap.setSaveMarkAndLen(sectionInfo);
     }
 
+    // 当所有的section都发送完毕时, RC就开始合并文件
     @Override
     public void getAllSectionSaveOk() {
-        // 当所有的section都发送完毕时, RC就开始合并文件
-
-        System.out.println("所有的section都已经接收完毕了, 要开始合并了");
-
         // 通知view已经开始合并
         for (IFileJoinListener listener : fileJoinListenerList) {
             listener.onBeginJoin();
