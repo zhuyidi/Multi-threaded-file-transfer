@@ -1,5 +1,3 @@
-import multhreadfiletransport.util.PackageUtil;
-import multhreadfiletransport.util.ParseUtil;
 
 import java.util.*;
 
@@ -14,6 +12,7 @@ public class test {
         List<Integer> c = new ArrayList<>();
         List<Integer> d = new ArrayList<>();
         Set<Integer> set = new HashSet<>();
+        ArrayList<Integer> hahaha = new ArrayList<>(set);
     }
 }
 

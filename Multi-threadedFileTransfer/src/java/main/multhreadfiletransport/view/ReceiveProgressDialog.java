@@ -273,8 +273,6 @@ public class ReceiveProgressDialog extends JDialog implements IFileJoinListener,
     // synchronized
     @Override
     public void dealNewReceiverThread(RecieverThread recieverThread) {
-
-
         String ip = recieverThread.getSocket().getInetAddress().getHostAddress();
         String hostName = recieverThread.getSocket().getInetAddress().getHostName();
         // 将JDialog加到该线程的监听队列中
