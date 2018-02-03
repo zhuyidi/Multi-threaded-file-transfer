@@ -1,8 +1,12 @@
-package sockettests.simplefiletransport.file_transport.test;
+package multhreadfiletransport.view;
 
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 
 /**
