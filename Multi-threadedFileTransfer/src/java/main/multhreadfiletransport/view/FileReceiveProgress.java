@@ -2,7 +2,7 @@ package multhreadfiletransport.view;
 
 import multhreadfiletransport.client.reciever.RecieverThread;
 import multhreadfiletransport.model.RecieverSectionInfo;
-import multhreadfiletransport.observer.ISectionReceiverListener;
+import multhreadfiletransport.observer.filetransport.ISectionReceiverListener;
 
 import javax.swing.*;
 import java.awt.*;

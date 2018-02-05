@@ -3,9 +3,8 @@ package multhreadfiletransport.client.reciever;
 import multhreadfiletransport.model.FileInfo;
 import multhreadfiletransport.model.RecieverSectionInfo;
 import multhreadfiletransport.model.RecieverSimpleInfo;
-import multhreadfiletransport.observer.ISectionInfoListener;
-import multhreadfiletransport.observer.ISectionInfoSpeaker;
-import multhreadfiletransport.util.PackageUtil;
+import multhreadfiletransport.observer.filetransport.ISectionInfoListener;
+import multhreadfiletransport.observer.filetransport.ISectionInfoSpeaker;
 import multhreadfiletransport.util.ParseUtil;
 
 import java.util.*;

@@ -3,7 +3,10 @@ package multhreadfiletransport.client.reciever;
 import multhreadfiletransport.model.FileInfo;
 import multhreadfiletransport.model.RecieverSectionInfo;
 import multhreadfiletransport.model.RecieverSimpleInfo;
-import multhreadfiletransport.observer.*;
+import multhreadfiletransport.observer.filetransport.IFileJoinListener;
+import multhreadfiletransport.observer.filetransport.IFileJoinSpeaker;
+import multhreadfiletransport.observer.filetransport.IFileReceiverCenterListener;
+import multhreadfiletransport.observer.filetransport.ISectionInfoListener;
 
 import java.io.*;
 import java.net.Socket;

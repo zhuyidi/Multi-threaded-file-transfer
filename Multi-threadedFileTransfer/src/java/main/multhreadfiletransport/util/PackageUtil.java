@@ -1,6 +1,7 @@
 package multhreadfiletransport.util;
 
 import multhreadfiletransport.model.FileInfo;
+import multhreadfiletransport.model.Message;
 import multhreadfiletransport.model.RecieverSectionInfo;
 
 import java.util.List;
@@ -81,5 +82,21 @@ public class PackageUtil {
         }
 
         return stringBuffer.toString();
+    }
+
+    // 4. 将一个Message对象打包成一个String
+    public static String packageMessage(Message msgMessage) {
+        StringBuffer strMessage = new StringBuffer();
+
+        strMessage.append(msgMessage.getFrom());
+        strMessage.append(":");
+        strMessage.append(msgMessage.getTo());
+        strMessage.append(":");
+        strMessage.append(msgMessage.getAction());
+        strMessage.append(":");
+        strMessage.append(msgMessage.getMessage());
+        strMessage.append(":");
+
+        return strMessage.toString();
     }
 }

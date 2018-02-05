@@ -1,6 +1,5 @@
 import multhreadfiletransport.client.reciever.RecieverCenter;
 import multhreadfiletransport.client.reciever.RecieverMap;
-import multhreadfiletransport.server.Server;
 import multhreadfiletransport.view.ReceiveProgressDialog;
 
 import java.io.IOException;

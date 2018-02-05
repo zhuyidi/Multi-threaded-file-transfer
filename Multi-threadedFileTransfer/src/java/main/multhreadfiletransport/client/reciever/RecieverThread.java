@@ -1,14 +1,13 @@
 package multhreadfiletransport.client.reciever;
 
 import multhreadfiletransport.model.RecieverSectionInfo;
-import multhreadfiletransport.observer.ISectionInfoListener;
-import multhreadfiletransport.observer.ISectionInfoSpeaker;
-import multhreadfiletransport.observer.ISectionReceiverListener;
-import multhreadfiletransport.observer.ISectionReceiverSpeaker;
+import multhreadfiletransport.observer.filetransport.ISectionInfoListener;
+import multhreadfiletransport.observer.filetransport.ISectionInfoSpeaker;
+import multhreadfiletransport.observer.filetransport.ISectionReceiverListener;
+import multhreadfiletransport.observer.filetransport.ISectionReceiverSpeaker;
 import multhreadfiletransport.util.ParseUtil;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.Socket;

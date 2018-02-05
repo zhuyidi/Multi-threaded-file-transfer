@@ -1,6 +1,7 @@
 package multhreadfiletransport.util;
 
 import multhreadfiletransport.model.FileInfo;
+import multhreadfiletransport.model.Message;
 import multhreadfiletransport.model.RecieverSectionInfo;
 
 import java.util.ArrayList;
@@ -70,5 +71,18 @@ public class ParseUtil {
     // 4. 将一个文件名从绝对路径中解析出来
     public static String parseFileName(String fileName) {
         return fileName.substring(fileName.lastIndexOf('/') + 1, fileName.length());
+    }
+
+    // 5. 将String格式的message转换成Message类
+    public static Message parseStringToMessage(String strMessage) {
+        Message msgMessage = new Message();
+
+        String[] tempMessage = strMessage.split(":");
+        msgMessage.setFrom(Integer.parseInt(tempMessage[0]));
+        msgMessage.setTo(Integer.parseInt(tempMessage[1]));
+        msgMessage.setAction(tempMessage[2]);
+        msgMessage.setMessage(tempMessage[3]);
+
+        return msgMessage;
     }
 }

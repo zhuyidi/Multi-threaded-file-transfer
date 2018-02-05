@@ -1,7 +1,7 @@
 package multhreadfiletransport.client.reciever;
 
-import multhreadfiletransport.observer.IReceiverServerListener;
-import multhreadfiletransport.observer.IReceiverServerSpeaker;
+import multhreadfiletransport.observer.filetransport.IReceiverServerListener;
+import multhreadfiletransport.observer.filetransport.IReceiverServerSpeaker;
 
 import java.io.IOException;
 import java.net.ServerSocket;

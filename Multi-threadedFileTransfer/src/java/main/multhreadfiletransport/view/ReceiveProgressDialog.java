@@ -4,7 +4,7 @@ import multhreadfiletransport.client.reciever.RecieverCenter;
 import multhreadfiletransport.client.reciever.RecieverMap;
 import multhreadfiletransport.client.reciever.RecieverThread;
 import multhreadfiletransport.model.RecieverSectionInfo;
-import multhreadfiletransport.observer.*;
+import multhreadfiletransport.observer.filetransport.*;
 
 import javax.swing.*;
 import java.awt.*;
