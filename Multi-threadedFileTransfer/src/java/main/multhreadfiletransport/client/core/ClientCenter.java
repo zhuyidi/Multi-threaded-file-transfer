@@ -16,8 +16,10 @@ public class ClientCenter {
     private static int CLIENT_ID = 1;
 
     public ClientCenter() {
+        // 为客户端分配ID
         this.clientId = CLIENT_ID;
         CLIENT_ID++;
+        // 连接服务端
         try {
             socket = new Socket("127.0.0.1", 33000);
             inputStream = new DataInputStream(socket.getInputStream());

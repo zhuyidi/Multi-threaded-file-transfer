@@ -99,4 +99,14 @@ public class PackageUtil {
 
         return strMessage.toString();
     }
+
+    // 5. 如果Message的message中存储的是文件名列表, 那就将这个列表进行打包
+    public static String packageFileNameList(String[] fileNames) {
+        StringBuffer strFileNames = new StringBuffer();
+        for (String fileName : fileNames) {
+            strFileNames.append(fileName);
+            strFileNames.append(";");
+        }
+        return strFileNames.toString();
+    }
 }

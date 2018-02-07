@@ -85,4 +85,10 @@ public class ParseUtil {
 
         return msgMessage;
     }
+
+    // 6. 如果Message中的message是文件名列表, 那么要将这个字符串解析成一个String[]
+    public static String[] parseStringToFileNameStringhArray(String str) {
+        String[] fileNames = str.split(";");
+        return fileNames;
+    }
 }

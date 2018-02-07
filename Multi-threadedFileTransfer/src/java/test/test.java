@@ -1,4 +1,6 @@
 
+import multhreadfiletransport.server.distribution.ResourceTable;
+
 import java.util.*;
 
 /**
@@ -6,13 +8,7 @@ import java.util.*;
  */
 public class test {
     public static void main(String[] args) {
-        System.out.println(0 | 8 | (0 + 8) | (8 - (0 + 8)));
-        List<Integer> a = new ArrayList<>();
-        List<Integer> b = new ArrayList<>();
-        List<Integer> c = new ArrayList<>();
-        List<Integer> d = new ArrayList<>();
-        Set<Integer> set = new HashSet<>();
-        ArrayList<Integer> hahaha = new ArrayList<>(set);
+        ResourceTable resourceTable = new ResourceTable();
     }
 }
 

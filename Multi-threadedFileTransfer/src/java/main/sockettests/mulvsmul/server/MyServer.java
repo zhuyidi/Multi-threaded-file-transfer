@@ -17,7 +17,7 @@ import java.util.List;
 public class MyServer {
     // 定义保存所有Socket的ArrayList, 并将其包装
     public static List<Socket> socketList =
-            Collections.synchronizedList(new ArrayList<>());
+            Collections.synchronizedList(new ArrayList<Socket>());
 
     public static void main(String[] args) throws IOException {
         // 接收其它通信实体连接请求的ServerSocket

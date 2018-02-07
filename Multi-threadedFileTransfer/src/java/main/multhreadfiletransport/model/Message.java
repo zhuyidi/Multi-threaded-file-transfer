@@ -4,7 +4,8 @@ package multhreadfiletransport.model;
  * Created by dela on 2/5/18.
  */
 public class Message {
-    public static final String REQUEST_FILE = "request file";
+    public static final String REQUEST_FILE = "request file"; // 请求文件
+    public static final String UPDATE_RESOURCE = "update resource"; // 更新资源表
 
     private int from;
     private int to;

@@ -2,8 +2,6 @@ package multhreadfiletransport.client.core;
 
 import multhreadfiletransport.observer.serverandclient.IMessageListener;
 import multhreadfiletransport.observer.serverandclient.IMessageSpeaker;
-import multhreadfiletransport.server.ServerCenter;
-import multhreadfiletransport.server.ServerDealMessage;
 import multhreadfiletransport.util.ParseUtil;
 
 import java.io.DataInputStream;
@@ -47,6 +45,13 @@ public class ClientThread implements Runnable, IMessageSpeaker {
         goon = true;
         clientDealMessage = new ClientDealMessage(this);
         addListener(clientDealMessage);
+
+        // 初始化完成之后, 就检测自己所拥有的资源, 然后发送给服务端用于资源表更新
+
+    }
+
+    public void updateResourceTable() {
+        // 检测当前所拥有的文件, 然后打包成message发送给server
     }
 
     @Override
