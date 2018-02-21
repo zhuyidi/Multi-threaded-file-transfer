@@ -77,7 +77,7 @@ public class ParseUtil {
     public static Message parseStringToMessage(String strMessage) {
         Message msgMessage = new Message();
 
-        String[] tempMessage = strMessage.split(":");
+        String[] tempMessage = strMessage.split("::");
         msgMessage.setFrom(Integer.parseInt(tempMessage[0]));
         msgMessage.setTo(Integer.parseInt(tempMessage[1]));
         msgMessage.setAction(tempMessage[2]);
@@ -90,5 +90,11 @@ public class ParseUtil {
     public static String[] parseStringToFileNameStringhArray(String str) {
         String[] fileNames = str.split(";");
         return fileNames;
+    }
+
+    // 7. 将clientID从sectionInfo中解析出来
+    public static String[] parseStringToClientIDAndSectionInfo(String str) {
+        String[] strs = str.split("''");
+        return strs;
     }
 }

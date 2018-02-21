@@ -6,6 +6,7 @@ import redis.clients.jedis.Jedis;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,11 +17,13 @@ import java.util.Set;
 // 在redis中维护两种表, 一种是<clientID, Set<fileName>>
 // 另一种是<fileName, Set<clientID>>
 public class ResourceTable {
-    private Jedis jedis;
+    private static Jedis jedis;
 
-    public ResourceTable() {
+    static {
         jedis = new Jedis("127.0.0.1", 6379);
     }
+
+    public ResourceTable() { }
 
     public Jedis getJedis() {
         return jedis;
@@ -31,7 +34,7 @@ public class ResourceTable {
     }
 
     // 客户端更新资源表信息
-    public void updateClientResource(Message msgMessage) {
+    public static void updateClientResource(Message msgMessage) {
         String clientID = String.valueOf(msgMessage.getFrom());
         String[] fileNames = ParseUtil.parseStringToFileNameStringhArray(msgMessage.getMessage());
 
@@ -74,5 +77,15 @@ public class ResourceTable {
             jedis.del(clientID);
             jedis.sadd(clientID, fileNames);
         }
+    }
+
+    public static Set<String> getNeedClient(String[] fileNames) {
+        Set<String> clients = jedis.sunion(fileNames);
+        return clients;
+    }
+
+    public static Set<String> getClientsByFileName(String fileName) {
+        Set<String> result = jedis.smembers(fileName);
+        return result;
     }
 }

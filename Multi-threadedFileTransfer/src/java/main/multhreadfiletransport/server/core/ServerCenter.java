@@ -1,13 +1,12 @@
 package multhreadfiletransport.server.core;
 
 import multhreadfiletransport.server.distribution.ResourceTable;
+import multhreadfiletransport.server.model.ClientDefinition;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by dela on 2/5/18.
@@ -18,8 +17,13 @@ public class ServerCenter {
     // 保存所有的客户端的socket的List(单例的), 并用集合操作类将其包装成线程安全的.
     public static List<Socket> socketList =
             Collections.synchronizedList(new ArrayList<Socket>());
+    public static Map<String, ClientDefinition> clientIDMap =
+            Collections.synchronizedMap(new HashMap<String, ClientDefinition>());
+    public static Map<String, ClientDefinition> useableClientIDMap =
+            Collections.synchronizedMap(new HashMap<String, ClientDefinition>());
     private ServerSocket serverSocket;
     private ResourceTable resourceTable;
+    public static ServerSender serverSendCenter;
 
     public ServerCenter() {
         try {
@@ -27,6 +31,8 @@ public class ServerCenter {
             serverSocket = new ServerSocket(33000);
             // 启动redis服务
             resourceTable = new ResourceTable();
+            // 启动发送中心
+            serverSendCenter = new ServerSender();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -24,7 +24,7 @@ public class ClientCenter {
             socket = new Socket("127.0.0.1", 33000);
             inputStream = new DataInputStream(socket.getInputStream());
             // 每个客户端登录上线之后, 就启动监听线程
-            new Thread(new ClientThread(socket)).start();
+            new Thread(new ClientThread(socket, clientId)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

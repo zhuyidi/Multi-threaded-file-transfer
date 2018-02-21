@@ -6,5 +6,5 @@ package multhreadfiletransport.observer.serverandclient;
 public interface IMessageSpeaker {
     void addListener(IMessageListener listener);
     void removeListener(IMessageListener listener);
-    void sendMessage();
+    void sendMessage(String strMessage);
 }

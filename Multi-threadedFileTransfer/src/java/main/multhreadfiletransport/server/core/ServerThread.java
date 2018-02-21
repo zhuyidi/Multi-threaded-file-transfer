@@ -1,5 +1,6 @@
 package multhreadfiletransport.server.core;
 
+import multhreadfiletransport.model.Message;
 import multhreadfiletransport.observer.serverandclient.IMessageListener;
 import multhreadfiletransport.observer.serverandclient.IMessageSpeaker;
 import multhreadfiletransport.util.ParseUtil;
@@ -47,6 +48,10 @@ public class ServerThread implements Runnable, IMessageSpeaker {
         normal = true;
         serverDealMessage = new ServerDealMessage(this);
         addListener(serverDealMessage);
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 
     @Override
@@ -125,7 +130,7 @@ public class ServerThread implements Runnable, IMessageSpeaker {
     }
 
     @Override
-    public void sendMessage() {
+    public void sendMessage(String strMessage) {
         for (IMessageListener listener : listeners) {
             listener.getMessage(message);
         }

@@ -6,6 +6,10 @@ package multhreadfiletransport.model;
 public class Message {
     public static final String REQUEST_FILE = "request file"; // 请求文件
     public static final String UPDATE_RESOURCE = "update resource"; // 更新资源表
+    public static final String CLIENT_ID = "client id";
+    public static final String DISTRIBUTION_SECTION = "distribution_section"; // 分配section
+    public static final String NO_THIS_SECTION = "no this section"; // sender端表示没有这个资源
+
 
     private int from;
     private int to;

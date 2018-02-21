@@ -89,24 +89,29 @@ public class PackageUtil {
         StringBuffer strMessage = new StringBuffer();
 
         strMessage.append(msgMessage.getFrom());
-        strMessage.append(":");
+        strMessage.append("::");
         strMessage.append(msgMessage.getTo());
-        strMessage.append(":");
+        strMessage.append("::");
         strMessage.append(msgMessage.getAction());
-        strMessage.append(":");
+        strMessage.append("::");
         strMessage.append(msgMessage.getMessage());
-        strMessage.append(":");
+        strMessage.append("::");
 
         return strMessage.toString();
     }
 
     // 5. 如果Message的message中存储的是文件名列表, 那就将这个列表进行打包
-    public static String packageFileNameList(String[] fileNames) {
+    public static String packageFileNameList(List<String> fileNames) {
         StringBuffer strFileNames = new StringBuffer();
         for (String fileName : fileNames) {
             strFileNames.append(fileName);
             strFileNames.append(";");
         }
         return strFileNames.toString();
+    }
+
+    // 6. 如果是任务分派消息, 那么要在str类型的sectionInfo之前加上要发送给谁
+    public static String packageToAndSectionInfo(String strSectionInfo, String clientID) {
+        return clientID + "''" + strSectionInfo;
     }
 }
