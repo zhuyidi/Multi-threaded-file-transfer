@@ -23,8 +23,10 @@ public class DistributionFile implements IMessageSpeaker{
     private long sectionSize;
     private List<IMessageListener> listenerList;
     private ServerSender serverSendCenter;
+    private List<String> serverFileList;  // 要求服务端发送的文件列表
 
     {
+        serverFileList = new ArrayList<>();
         serverSendCenter = ServerCenter.serverSendCenter;
         listenerList = new ArrayList<>();
         listenerList.add(serverSendCenter);
@@ -51,9 +53,17 @@ public class DistributionFile implements IMessageSpeaker{
         // 得到每一个1 --> A + B, 然后进行细节处理
         for (String fileName : fileList) {
             Set<String> clients = ResourceTable.getClientsByFileName(fileName);
-            distributionSection(clients, fileName);
-        }
+            // 将资源表里面拥有此文件的客户端和在线并符合要求的客户端求并集
+            clients.retainAll(onlineClientSet);
 
+            // 说明该文件没有符合发送条件的客户端发送, 那么就将这个文件加入服务端的任务列表
+            if (clients.size() == 0) {
+                serverFileList.add(fileName);
+            } else {
+                // 如果有符合条件的客户端, 就进行任务分配
+                distributionSection(clients, fileName);
+            }
+        }
     }
 
     public void distributionSection(Set<String> clients, String fileName) {
@@ -70,8 +80,9 @@ public class DistributionFile implements IMessageSpeaker{
         Iterator<ClientDefinition> iterator = clientDefinitions.iterator();
 
 
-        // TODO 这里有问题, 不应该是最后调用sendMessage方法, 而且, 在最后构成任务分配消息的时候, 消息内容应该是一个sectionInfoList
-        // todo 还有问题没有处理完, 当前只处理完了sender端有的文件, 还有的文件没有客户端有, 要由服务器来发送, 这部分没有处理
+        // 这里不应该是最后调用sendMessage方法, 而且, 在最后构成任务分配消息的时候, 消息内容应该是一个sectionInfoList
+        // 还有问题没有处理完, 当前只处理完了sender端有的文件,
+        // 还有的文件没有客户端有, 要由服务器来发送, 这部分没有处理 --> 已经处理完成
 
         if (file.length() <= sectionSize) {
             ClientDefinition first = iterator.next();
