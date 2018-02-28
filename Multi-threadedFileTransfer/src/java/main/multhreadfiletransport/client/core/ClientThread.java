@@ -173,7 +173,7 @@ public class ClientThread implements Runnable, IMessageSpeaker {
     }
 
     @Override
-    public void sendMessage() {
+    public void sendMessage(String strMessage) {
         for (IMessageListener listener : listeners) {
             listener.getMessage(message);
         }
