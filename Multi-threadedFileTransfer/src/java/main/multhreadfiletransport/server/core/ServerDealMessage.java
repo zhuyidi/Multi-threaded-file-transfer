@@ -48,12 +48,13 @@ public class ServerDealMessage implements IMessageListener {
             ServerCenter.useableClientIDMap.put(clientID, new ClientDefinition(clientID, serverThread.getSocket()));
         } else if (msgMessage.getAction() == Message.NO_THIS_SECTION) {
             // 该sender没有这个资源
-            // TODO 如果没有, 那么服务端就要自己发送, 那么服务端应不应该构建一个sectionList, 还是检测到一个就发送一个?
-
+            // 如果没有, 那么服务端就要自己发送, 那么服务端应不应该构建一个sectionList, 还是检测到一个就发送一个?
+            // 检测到如果没有这个文件, 那么就由服务端自己发送, 检测到一个就发送一个
+            serverSendSection(msgMessage);
         }
     }
 
-    public void serverSendSection(Message message) {
+    public synchronized void serverSendSection(Message message) {
         String[] info = ParseUtil.parseStringToClientIDAndSectionInfo(message.getMessage());
         Socket socket = ServerCenter.clientIDMap.get(info[0]).getSocket();
         try {
