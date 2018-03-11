@@ -8,7 +8,7 @@
 
 ## **1. 服务端设计**
 
-服务端主要有四个部分组成:ServerCenter, ServerDealMessage, ServerThread以及任务分配模块. 下面对这五个模块的功能进行简要介绍:
+服务端主要有四个部分组成:ServerCenter, ServerDealMessage, ServerThread以及任务分配模块. 下面对这四个模块的功能进行简要介绍:
 
 ### **(1) ServerCenter**
 **描述:** ServerCenter主要用来启动整个系统(比如创建ServerSocket, 启动Redis服务, 启动ServerSender等), 以及处理来自客户端的登录连接请求, 每连接上一个客户端, 就给其分配一个ServerThread与之通信.
